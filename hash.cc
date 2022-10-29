@@ -14,7 +14,6 @@ namespace {
   struct Hash;
 
   using seq_vector_t = std::vector<uint64_t>; 
-  // using pair_seq_size_t = std::pair<int64_t*, size_t>;
   using hash_table_t = std::unordered_set<seq_vector_t, Hash>;
   using hash_tables_t = std::unordered_map<hash_function_id_t , hash_table_t>;
 
@@ -23,7 +22,7 @@ namespace {
     Hash(hash_function_t funct) {
       function = funct;
     }
-    uint64_t operator () (seq_vector_t seq) {
+    uint64_t operator () (seq_vector_t seq) const {
       return function(&(seq[0]), seq.size());
     }
   };
@@ -60,8 +59,8 @@ hash_function_id_t hash_create(hash_function_t hash_function) {
 
     numberOfCreatedHashes++;
     hash_table_t hash_table(10, Hash(hash_function));
-    hash_tables[numberOfCreatedHashes] = hash_table;
-    
+    hash_tables.insert({numberOfCreatedHashes, hash_table}); 
+
     debug("hash_create: hash table #" + std::to_string(numberOfCreatedHashes) + " created");
 
     return numberOfCreatedHashes;
@@ -75,9 +74,9 @@ void hash_delete(hash_function_id_t id) {
   debug("hash_delete: hash table #" + std::to_string(id) + debugEnding);
 }
 
-// size_t hash_size(unsigned long id) {
-//     return hash_tables.size();
-// }
+size_t hash_size(unsigned long id) {
+    return hash_tables.size();
+}
 
 bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
   std::string stringRepresntationOfSeq = getStringRepresentation(seq, size);
@@ -95,9 +94,11 @@ bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
   std::vector<uint64_t> copySeq(seq, seq + size);
   bool wasInserted = hashTable.insert(copySeq).second;
 
-  debug("");// was Inserted or not
+  // debug("");// was Inserted or not
 
-  return wasInserted;
+  // return wasInserted;
+
+  return true;
 }
 
 bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
@@ -139,22 +140,3 @@ bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
 
   return false;
 }
-
-
-// unsigned long hash_create(hash_function_t hash_function) {
-//   return 0;
-// }
-// void hash_delete(unsigned long id){return;}
-// size_t hash_size(unsigned long id) {return 0;}
-// bool hash_insert(unsigned long id, uint64_t const * seq, size_t size) {
-//   return false;
-// }
-// bool hash_remove(unsigned long id, uint64_t const * seq, size_t size) {
-//   return false;
-// }
-// void hash_clear(unsigned long id) {
-//   return;
-// }
-// bool hash_test(unsigned long id, uint64_t const * seq, size_t size) {
-//   return false;
-// }
