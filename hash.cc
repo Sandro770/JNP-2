@@ -67,94 +67,94 @@ hash_function_id_t hash_create(hash_function_t hash_function) {
     return numberOfCreatedHashes;
 }
 
-// void hash_delete(hash_function_id_t id) {
-//   debug("hash_delete(" + std::to_string(id) + ")");
-//   bool wasErased = hash_tables.erase(id);
+void hash_delete(hash_function_id_t id) {
+  debug("hash_delete(" + std::to_string(id) + ")");
+  bool wasErased = hash_tables.erase(id);
   
-//   std::string debugEnding = wasErased ? " deleted" : " does not exist";
-//   debug("hash_delete: hash table #" + std::to_string(id) + debugEnding);
+  std::string debugEnding = wasErased ? " deleted" : " does not exist";
+  debug("hash_delete: hash table #" + std::to_string(id) + debugEnding);
+}
+
+// size_t hash_size(unsigned long id) {
+//     return hash_tables.size();
 // }
 
-// // size_t hash_size(unsigned long id) {
-// //     return hash_tables.size();
-// // }
+bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
+  std::string stringRepresntationOfSeq = getStringRepresentation(seq, size);
+  debug("hash_insert(" + std::to_string(id) + ", " + 
+     stringRepresntationOfSeq + ", " + std::to_string(size) + ")"); 
 
-// bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
-//   std::string stringRepresntationOfSeq = getStringRepresentation(seq, size);
-//   debug("hash_insert(" + std::to_string(id) + ", " + 
-//      stringRepresntationOfSeq + ", " + std::to_string(size) + ")"); 
+  auto hashTableIt = hash_tables.find(id);
+  if (hashTableIt == hash_tables.end()) {
+    // debug("hash_insert: hash table #" << id << "");
+    return false;
+  }
 
-//   auto hashTableIt = hash_tables.find(id);
-//   if (hashTableIt == hash_tables.end()) {
-//     // debug("hash_insert: hash table #" << id << "");
-//     return false;
-//   }
+  hash_table_t hashTable = hashTableIt -> second;
 
-//   hash_table_t hashTable = hashTableIt -> second;
+  std::vector<uint64_t> copySeq(seq, seq + size);
+  bool wasInserted = hashTable.insert(copySeq).second;
 
-//   std::vector<uint64_t> copySeq(seq, seq + size);
-//   bool wasInserted = hashTable.insert(copySeq).second;
+  debug("");// was Inserted or not
 
-//   debug("");// was Inserted or not
+  return wasInserted;
+}
 
-//   return wasInserted;
-// }
+bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
+  // validateParameters();
+  // debug("");
+  // if (seq == NULL) {
 
-// bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
-//   // validateParameters();
-//   // debug("");
-//   // if (seq == NULL) {
+  // }
+  // if (size == 0) {
 
-//   // }
-//   // if (size == 0) {
+  // }
 
-//   // }
-
-//   auto hashTableIt = hash_tables.find(id);
-//   if (hashTableIt == hash_tables.end()) {
-//     debug("");
-//     return false;
-//   } 
+  auto hashTableIt = hash_tables.find(id);
+  if (hashTableIt == hash_tables.end()) {
+    debug("");
+    return false;
+  } 
   
-//   hash_table_t hashTable = hashTableIt -> second;
-//   bool wasRemoved = hashTable.erase(std::vector<uint64_t>(seq, seq + size));
+  hash_table_t hashTable = hashTableIt -> second;
+  bool wasRemoved = hashTable.erase(std::vector<uint64_t>(seq, seq + size));
   
-//   debug("");
+  debug("");
 
-//   return wasRemoved;
-// }
+  return wasRemoved;
+}
 
-// void hash_clear(hash_function_id_t id) {
-//   auto hashTableIt = hash_tables.find(id);
-//   hash_table_t hashTable = hashTableIt -> second;
-//   if (hashTableIt != hash_tables.end())
-//     hashTable.clear();
-// }
+void hash_clear(hash_function_id_t id) {
+  auto hashTableIt = hash_tables.find(id);
+  hash_table_t hashTable = hashTableIt -> second;
+  if (hashTableIt != hash_tables.end())
+    hashTable.clear();
+}
 
-// bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
-//   hash_tables_t::iterator hashTableIt = hash_tables.find(id);
-//   hash_table_t hashTable = hashTableIt -> second;
-//   if (hashTableIt != hash_tables.end())
-//     return hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
+bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
+  hash_tables_t::iterator hashTableIt = hash_tables.find(id);
+  hash_table_t hashTable = hashTableIt -> second;
+  if (hashTableIt != hash_tables.end())
+    return hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
 
-//   return false;
-// }
+  return false;
+}
 
 
 // unsigned long hash_create(hash_function_t hash_function) {
 //   return 0;
 // }
-void hash_delete(unsigned long id){return;}
-size_t hash_size(unsigned long id) {return 0;}
-bool hash_insert(unsigned long id, uint64_t const * seq, size_t size) {
-  return false;
-}
-bool hash_remove(unsigned long id, uint64_t const * seq, size_t size) {
-  return false;
-}
-void hash_clear(unsigned long id) {
-  return;
-}
-bool hash_test(unsigned long id, uint64_t const * seq, size_t size) {
-  return false;
-}
+// void hash_delete(unsigned long id){return;}
+// size_t hash_size(unsigned long id) {return 0;}
+// bool hash_insert(unsigned long id, uint64_t const * seq, size_t size) {
+//   return false;
+// }
+// bool hash_remove(unsigned long id, uint64_t const * seq, size_t size) {
+//   return false;
+// }
+// void hash_clear(unsigned long id) {
+//   return;
+// }
+// bool hash_test(unsigned long id, uint64_t const * seq, size_t size) {
+//   return false;
+// }
