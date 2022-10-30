@@ -39,6 +39,16 @@ namespace {
    void debugInformation(std::string functionName, unsigned long id) {
     debug(functionName + "(" + std::to_string(id) + ")");
   }
+  
+  void invalidData(std::string function_type, uint64_t const *seq, size_t size) {
+    if (seq == NULL) {
+      debug(function_type + ": invalid pointer (NULL)");
+    }
+    
+    if (size == 0) {
+      debug(function_type + ": invalid size (0)");
+    }
+  }
 
   void functionParamsPrintDebug(std::string functionName, std::vector<std::string> params) {
     std::string paramsList;
