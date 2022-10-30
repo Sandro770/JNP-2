@@ -40,6 +40,10 @@ namespace {
     debug(functionName + "(" + std::to_string(id) + ")");
   }
   
+  void debugFinalInformation (std::string functionName, unsigned long id, std::string debugEnding) {
+    debug(functionName + ": hash table #" + std::to_string(id) + debugEnding);
+  }
+  
   void invalidData(std::string function_type, uint64_t const *seq, size_t size) {
     if (seq == NULL) {
       debug(function_type + ": invalid pointer (NULL)");
