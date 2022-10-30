@@ -76,10 +76,14 @@ namespace jnp1 {
   }
 
   size_t hash_size(unsigned long id) {
+    auto hashTablesIt = hash_tables.find(id);
+
+    if (hashTablesIt == hash_tables.end())
+      return 0; 
     //TODO: wydaje mi się, że tutaj trzeba zwrócić wielkość konkretnej tablicy hashującej, nie liczbę tablic hashujących
     
     //Wtedy są problemy z kompilacją, wydaje mi się, że to kwestia tego, że nie do końca rozumiem jak skonstruowany jest set w Twoim programie w hash_create.
-      return hash_tables.size();
+    return (hashTablesIt->second).size();
   }
 
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
