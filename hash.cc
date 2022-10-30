@@ -36,8 +36,8 @@ namespace {
         std::cerr << debugMessage << '\n';
   }
   
-   void debugInformation(std::string functionName, unsigned long id) {
-    debug(functionName + "(" + std::to_string(id) + ")");
+   void debugInformation(std::string functionName, std::string id) {
+    debug(functionName + "(" + id + ")");
   }
   
   void debugFinalInformation (std::string functionName, unsigned long id, std::string debugEnding) {
@@ -80,22 +80,20 @@ namespace jnp1 {
       hash_table_t hash_table(10, Hash(hash_function));
       hash_tables.insert({numberOfCreatedHashes, hash_table}); 
 
-      debug("hash_create: hash table #" + std::to_string(numberOfCreatedHashes) + " created");
-
+      debugFinalInformation("hash_create", numberOfCreatedHashes, " created");
       return numberOfCreatedHashes;
   }
 
   void hash_delete(hash_function_id_t id) {
-    //debugInformation("hash_delete", id);
-    debug("hash_delete(" + std::to_string(id) + ")");
+    debugInformation("hash_delete", std::to_string(id));
     bool wasErased = hash_tables.erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
     
     std::string debugEnding = wasErased ? " deleted" : " does not exist";
-    debug("hash_delete: hash table #" + std::to_string(id) + debugEnding);
+    debugFinalInformation("hash_delete", id, debugEnding);
   }
 
   size_t hash_size(unsigned long id) {
-    //debugInformation("hash_size", id);
+    debugInformation("hash_size", std::to_string(id));
     auto hashTablesIt = hash_tables.find(id);
 
     if (hashTablesIt == hash_tables.end())
@@ -107,7 +105,8 @@ namespace jnp1 {
   }
 
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
-    //debugInformation("hash_insert", id);
+    debugInformation("hash_insert", std::to_string(id) + ", " + 
+      getStringRepresntation(seq, size) + ", " + std::to_string(size) + ")");
     std::string stringRepresntationOfSeq = getStringRepresentation(seq, size);
     debug("hash_insert(" + std::to_string(id) + ", " + 
       stringRepresntationOfSeq + ", " + std::to_string(size) + ")"); 
@@ -131,7 +130,7 @@ namespace jnp1 {
   }
 
   bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
-    //debugInformation("hash_remove", id);
+    debugInformation("hash_remove", std::to_string(id));
     // validateParameters();
     // debug("");
     // if (seq == NULL) {
@@ -156,7 +155,7 @@ namespace jnp1 {
   }
 
   void hash_clear(hash_function_id_t id) {
-    //debugInformation("hash_clear", id);
+    debugInformation("hash_clear", std::to_string(id));
     auto hashTableIt = hash_tables.find(id);
     hash_table_t hashTable = hashTableIt -> second;
     if (hashTableIt != hash_tables.end())
@@ -164,7 +163,7 @@ namespace jnp1 {
   }
 
   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
-    //debugInformation("hash_test", id);
+    debugInformation("hash_test", std::to_string(id));
     hash_tables_t::iterator hashTableIt = hash_tables.find(id);
     hash_table_t hashTable = hashTableIt -> second;
     if (hashTableIt != hash_tables.end())
