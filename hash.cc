@@ -69,7 +69,7 @@ namespace jnp1 {
 
   void hash_delete(hash_function_id_t id) {
     debug("hash_delete(" + std::to_string(id) + ")");
-    bool wasErased = hash_tables.erase(id);
+    bool wasErased = hash_tables.erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
     
     std::string debugEnding = wasErased ? " deleted" : " does not exist";
     debug("hash_delete: hash table #" + std::to_string(id) + debugEnding);
