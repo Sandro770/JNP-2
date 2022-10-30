@@ -15,3 +15,5 @@
 
 2) co to w ogóle jest obiekt haszujący
 [ODP [2]]: obiekt klasy Hash 
+
+3) Jak dokładnie działa przechowywanie elementów w kontenerach? Jak dokładnie działa set?
