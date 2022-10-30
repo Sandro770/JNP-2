@@ -76,17 +76,9 @@ namespace jnp1 {
   }
 
   size_t hash_size(unsigned long id) {
-    //TODO: wydaje mi się, że tutaj trzeba zwrócić wielkość konkretnej tablicy hashującej, nie liczbę tablic hashujących.
-    // Chciałam to zrobić jakoś tak:
-      // hash_table_t current = hash_tables[id];
-      // if (current.empty()) {
-      //   return 0;
-      // }
-      // else {
-      //   return hash_tables[id].size();
-      // }
+    //TODO: wydaje mi się, że tutaj trzeba zwrócić wielkość konkretnej tablicy hashującej, nie liczbę tablic hashujących
     
-    //Ale wtedy są problemy z kompilacją, wydaje mi się, że to kwestia tego, że nie do końca rozumiem jak skonstruowany jest set w Twoim programie w hash_create.
+    //Wtedy są problemy z kompilacją, wydaje mi się, że to kwestia tego, że nie do końca rozumiem jak skonstruowany jest set w Twoim programie w hash_create.
       return hash_tables.size();
   }
 
