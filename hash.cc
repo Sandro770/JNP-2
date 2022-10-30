@@ -105,11 +105,10 @@ namespace jnp1 {
   }
 
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
+    std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
+    
     debugInformation("hash_insert", std::to_string(id) + ", " + 
-      getStringRepresntation(seq, size) + ", " + std::to_string(size) + ")");
-    std::string stringRepresntationOfSeq = getStringRepresentation(seq, size);
-    debug("hash_insert(" + std::to_string(id) + ", " + 
-      stringRepresntationOfSeq + ", " + std::to_string(size) + ")"); 
+    stringRepresentationOfSeq + ", " + std::to_string(size));
 
     auto hashTableIt = hash_tables.find(id);
     if (hashTableIt == hash_tables.end()) {
