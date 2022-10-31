@@ -36,7 +36,12 @@ namespace {
 
   hash_function_id_t numberOfCreatedHashes = initNumber();
 
-  hash_tables_t hash_tables;
+  hash_tables_t initHashTables() {
+    hash_tables_t new_hash_table = {};
+    return new_hash_table;
+  }
+
+  hash_tables_t hash_tables = initHashTables();
 
 
   void debug(std::string debugMessage) {
