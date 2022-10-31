@@ -29,20 +29,8 @@ namespace {
       return function(&(seq[0]), seq.size());
     }
   };
-  
-  // hash_function_id_t& numberOfCreatedHashes() {
-  //   static hash_function_id_t ans = 0;
-  //   return ans;
-  // }
-
-  // hash_function_id_t initNumber() {
-  //   return 0;
-  // }
 
   hash_function_id_t numberOfCreatedHashes = 0;
-
-
-
 
   hash_tables_t& hash_tables() {
     static hash_tables_t *x = new hash_tables_t();
@@ -101,6 +89,7 @@ namespace {
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
+    std::cerr <<"[" << &hash_function << "]\n";
       // debug("hash_create(" + hash_function + ")");
       //debugInformation("hash_create", hash_function);
       numberOfCreatedHashes++;
@@ -126,11 +115,14 @@ namespace jnp1 {
     size_t answer = 0;
 
     if (!(hashTablesIt == hash_tables().end())) {
+      std::string debugEnding = " contains " + std::to_string(answer) + " element(s)";
       answer = (hashTablesIt->second).size();
+      debugFinalInformation("hash_size", id, debugEnding);
+    }
+    else {
+      debugFinalInformation("hash_size", id, " does not exist");  
     }
 
-    std::string debugEnding = " contains " + std::to_string(answer) + " element(s)";
-    debugFinalInformation("hash_size", id, debugEnding);
     return answer;
   }
 
@@ -195,10 +187,12 @@ namespace jnp1 {
         (hashTableIt->second).clear();
         wasCleared = true;
       }
+      std::string debugEnding = wasCleared ? " cleared" : " was empty";
+      debugFinalInformation("hash_clear", id, debugEnding);
     }
-
-    std::string debugEnding = wasCleared ? " cleared" : " was empty";
-    debugFinalInformation("hash_clear", id, debugEnding);
+    else {
+      debugFinalInformation("hash_clear", id, " does not exist");
+    }
   }
 
   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
