@@ -117,10 +117,11 @@ namespace jnp1 {
       return false;
     }
 
-    hash_table_t hashTable = hashTableIt -> second;
+ //   hash_table_t hashTable = hashTableIt -> second;
 
     std::vector<uint64_t> copySeq(seq, seq + size);
-    bool wasInserted = hashTable.insert(copySeq).second;
+    bool wasInserted = (hashTableIt->second).insert(copySeq).second; //hashTable.insert(copySeq).second;
+    // Wcześniejsza wersja operowała na kopii, dlatego prawdopodobnie ciąg nie był wklejony do struktury danych
     std::string  debugEnding = ", sequence " + stringRepresentationOfSeq;
     debugEnding += wasInserted ? " inserted" : " was present";
     debugFinalInformation("hash_insert", id, debugEnding);
