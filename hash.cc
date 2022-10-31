@@ -169,7 +169,7 @@ namespace jnp1 {
   void hash_clear(hash_function_id_t id) {
     debugInformation("hash_clear", std::to_string(id));
     auto hashTableIt = hash_tables.find(id);
-    hash_table_t hashTable = hashTableIt -> second;
+    //hash_table_t hashTable = hashTableIt -> second;
     bool wasCleared = false;
     if (hashTableIt != hash_tables.end()) {
       if (!(hashTableIt->second).empty()) {
@@ -188,13 +188,13 @@ namespace jnp1 {
     stringRepresentationOfSeq + ", " + std::to_string(size));
     bool isPresent = false;
     hash_tables_t::iterator hashTableIt = hash_tables.find(id);
-    hash_table_t hashTable = hashTableIt -> second;
 
     if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
-      invalidData(hashTableIt == hash_tables.end(), id, "hash_remove", seq, size);
+      invalidData(hashTableIt == hash_tables.end(), id, "hash_test", seq, size);
       return false;
     } 
     else {
+      hash_table_t hashTable = hashTableIt -> second;
       isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
     }
 
