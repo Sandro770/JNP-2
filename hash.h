@@ -1,16 +1,17 @@
 #ifndef HASH_H
 #define HASH_H
 
+#ifdef __cplusplus
+#include <iostream>
+typedef uint64_t(*hash_function_t)(uint64_t const*, size_t); 
+
+namespace jnp1{
+extern "C" {
+#else
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-
 typedef uint64_t(*hash_function_t)(uint64_t const*, size_t); 
-
-
-#ifdef __cplusplus
-namespace jnp1{
-extern "C" {
 #endif
     unsigned long hash_create(hash_function_t hash_function);
     void hash_delete(unsigned long id);
