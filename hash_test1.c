@@ -20,7 +20,6 @@ static uint64_t hash_function_2(uint64_t const * v, size_t n) {
     hash += v[k];
   return hash;
 }
-
 int main() {
   unsigned long id_1, id_2;
   uint64_t const seq_1[] = {0, 1, 3000, 150, 25};
@@ -31,6 +30,7 @@ int main() {
   assert(hash_size(id_1) == 0);
 
   assert(hash_insert(id_1, seq_1, SIZE_SEQ(seq_1)));
+  printf("hsize: %d\n", hash_size(id_1));
   assert(hash_size(id_1) == 1);
   assert(hash_insert(id_1, seq_2, SIZE_SEQ(seq_2)));
   assert(hash_size(id_1) == 2);

@@ -20,7 +20,7 @@ namespace {
   using hash_table_t = std::unordered_set<seq_vector_t, Hash>;
   using hash_tables_t = std::unordered_map<hash_function_id_t , hash_table_t>;
 
-  struct Hash{
+  struct Hash {
     hash_function_t function;
     Hash(hash_function_t funct) {
       function = funct;
@@ -29,20 +29,25 @@ namespace {
       return function(&(seq[0]), seq.size());
     }
   };
+  
+  // hash_function_id_t& numberOfCreatedHashes() {
+  //   static hash_function_id_t ans = 0;
+  //   return ans;
+  // }
 
-  hash_function_id_t initNumber() {
-    return 0;
-  }
+  // hash_function_id_t initNumber() {
+  //   return 0;
+  // }
 
-  hash_function_id_t numberOfCreatedHashes = initNumber();
+  hash_function_id_t numberOfCreatedHashes = 0;
 
-  hash_tables_t initHashTables() {
+
+
+
+  hash_tables_t& hash_tables() {
     static hash_tables_t *x = new hash_tables_t();
     return *x;
   }
-
-  hash_tables_t hash_tables = initHashTables();
-
 
   void debug(std::string debugMessage) {
       if (debugModeOn)
@@ -99,8 +104,9 @@ namespace jnp1 {
       // debug("hash_create(" + hash_function + ")");
       //debugInformation("hash_create", hash_function);
       numberOfCreatedHashes++;
-      hash_table_t hash_table(10, Hash(hash_function));
-      hash_tables.insert({numberOfCreatedHashes - 1, hash_table}); 
+      hash_table_t hash_table(0, Hash(hash_function));
+      // int tmpasfsad = 5;
+      hash_tables().insert({(unsigned long)(numberOfCreatedHashes - 1), hash_table}); 
 
       debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
       return numberOfCreatedHashes - 1;
@@ -108,7 +114,7 @@ namespace jnp1 {
 
   void hash_delete(hash_function_id_t id) {
     debugInformation("hash_delete", std::to_string(id));
-    bool wasErased = hash_tables.erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
+    bool wasErased = hash_tables().erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
     
     std::string debugEnding = wasErased ? " deleted" : " does not exist";
     debugFinalInformation("hash_delete", id, debugEnding);
@@ -116,10 +122,10 @@ namespace jnp1 {
 
   size_t hash_size(unsigned long id) {
     debugInformation("hash_size", std::to_string(id));
-    auto hashTablesIt = hash_tables.find(id);
+    auto hashTablesIt = hash_tables().find(id);
     size_t answer = 0;
 
-    if (!(hashTablesIt == hash_tables.end())) {
+    if (!(hashTablesIt == hash_tables().end())) {
       answer = (hashTablesIt->second).size();
     }
 
@@ -133,10 +139,9 @@ namespace jnp1 {
     
     debugInformation("hash_insert", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
-
-    auto hashTableIt = hash_tables.find(id);
-    if ((hashTableIt == hash_tables.end()) || (seq == NULL) || (size == 0)) {
-      invalidData(hashTableIt == hash_tables.end(), id, "hash_insert", seq, size);
+    auto hashTableIt = hash_tables().find(id);
+    if ((hashTableIt == hash_tables().end()) || (seq == NULL) || (size == 0)) {
+      invalidData(hashTableIt == hash_tables().end(), id, "hash_insert", seq, size);
       return false;
     }
 
@@ -165,9 +170,9 @@ namespace jnp1 {
 
     // }
 
-    auto hashTableIt = hash_tables.find(id);
-    if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
-      invalidData(hashTableIt == hash_tables.end(), id, "hash_remove", seq, size);
+    auto hashTableIt = hash_tables().find(id);
+    if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
+      invalidData(hashTableIt == hash_tables().end(), id, "hash_remove", seq, size);
       return false;
     } 
     
@@ -182,10 +187,10 @@ namespace jnp1 {
 
   void hash_clear(hash_function_id_t id) {
     debugInformation("hash_clear", std::to_string(id));
-    auto hashTableIt = hash_tables.find(id);
+    auto hashTableIt = hash_tables().find(id);
     //hash_table_t hashTable = hashTableIt -> second;
     bool wasCleared = false;
-    if (hashTableIt != hash_tables.end()) {
+    if (hashTableIt != hash_tables().end()) {
       if (!(hashTableIt->second).empty()) {
         (hashTableIt->second).clear();
         wasCleared = true;
@@ -201,10 +206,10 @@ namespace jnp1 {
     debugInformation("hash_test", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     bool isPresent = false;
-    hash_tables_t::iterator hashTableIt = hash_tables.find(id);
+    hash_tables_t::iterator hashTableIt = hash_tables().find(id);
 
-    if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
-      invalidData(hashTableIt == hash_tables.end(), id, "hash_test", seq, size);
+    if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
+      invalidData(hashTableIt == hash_tables().end(), id, "hash_test", seq, size);
       return false;
     } 
     else {
