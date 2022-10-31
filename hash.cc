@@ -77,10 +77,10 @@ namespace jnp1 {
       //debugInformation("hash_create", hash_function);
       numberOfCreatedHashes++;
       hash_table_t hash_table(10, Hash(hash_function));
-      hash_tables.insert({numberOfCreatedHashes, hash_table}); 
+      hash_tables.insert({numberOfCreatedHashes - 1, hash_table}); 
 
-      debugFinalInformation("hash_create", numberOfCreatedHashes, " created");
-      return numberOfCreatedHashes;
+      debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
+      return numberOfCreatedHashes - 1;
   }
 
   void hash_delete(hash_function_id_t id) {
@@ -100,7 +100,7 @@ namespace jnp1 {
       answer = (hashTablesIt->second).size();
     }
 
-    std::string debugEnding = " contains " + std::to_string(answer) + " elements";
+    std::string debugEnding = " contains " + std::to_string(answer) + " element(s)";
     debugFinalInformation("hash_size", id, debugEnding);
     return answer;
   }
