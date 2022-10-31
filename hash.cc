@@ -7,7 +7,11 @@
 
 using hash_function_id_t = unsigned long;
 
-const bool debugModeOn = true;
+bool initDebug() {
+  return true;
+}
+
+const bool debugModeOn = initDebug();
 
 namespace {
   struct Hash;
@@ -26,7 +30,12 @@ namespace {
     }
   };
 
-  hash_function_id_t numberOfCreatedHashes = 0;
+  hash_function_id_t initNumber() {
+    return 0;
+  }
+
+  hash_function_id_t numberOfCreatedHashes = initNumber();
+
   hash_tables_t hash_tables;
 
 
