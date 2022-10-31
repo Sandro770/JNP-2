@@ -7,7 +7,6 @@
 
 using hash_function_id_t = unsigned long;
 
-
 const bool debugModeOn = true;
 
 namespace {
@@ -95,13 +94,15 @@ namespace jnp1 {
   size_t hash_size(unsigned long id) {
     debugInformation("hash_size", std::to_string(id));
     auto hashTablesIt = hash_tables.find(id);
+    size_t answer = 0;
 
-    if (hashTablesIt == hash_tables.end())
-      return 0; 
-    //TODO: wydaje mi się, że tutaj trzeba zwrócić wielkość konkretnej tablicy hashującej, nie liczbę tablic hashujących
-    
-    //Wtedy są problemy z kompilacją, wydaje mi się, że to kwestia tego, że nie do końca rozumiem jak skonstruowany jest set w Twoim programie w hash_create.
-    return (hashTablesIt->second).size();
+    if (!(hashTablesIt == hash_tables.end())) {
+      answer = (hashTablesIt->second).size();
+    }
+
+    std::string debugEnding = " contains " + std::to_string(answer) + " elements";
+    debugFinalInformation("hash_size", id, debugEnding);
+    return answer;
   }
 
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
@@ -111,8 +112,8 @@ namespace jnp1 {
     stringRepresentationOfSeq + ", " + std::to_string(size));
 
     auto hashTableIt = hash_tables.find(id);
-    if (hashTableIt == hash_tables.end()) {
-      // debug("hash_insert: hash table #" << id << "");
+    if ((hashTableIt == hash_tables.end()) || (seq == NULL) || (size == 0)) {
+      invalidData("hash_insert", seq, size);
       return false;
     }
 
@@ -120,12 +121,11 @@ namespace jnp1 {
 
     std::vector<uint64_t> copySeq(seq, seq + size);
     bool wasInserted = hashTable.insert(copySeq).second;
+    std::string  debugEnding = ", sequence " + stringRepresentationOfSeq;
+    debugEnding += wasInserted ? " inserted" : " was present";
+    debugFinalInformation("hash_insert", id, debugEnding);
 
-    // debug("");// was Inserted or not
-
-    // return wasInserted;
-
-    return true;
+    return wasInserted;
   }
 
   bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
@@ -140,15 +140,16 @@ namespace jnp1 {
     // }
 
     auto hashTableIt = hash_tables.find(id);
-    if (hashTableIt == hash_tables.end()) {
-      debug("");
+    if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
+      invalidData("hash_remove", seq, size);
       return false;
     } 
     
     hash_table_t hashTable = hashTableIt -> second;
     bool wasRemoved = hashTable.erase(std::vector<uint64_t>(seq, seq + size));
-    
-    debug("");
+    std::string debugEnding = ", sequence " + getStringRepresentation(seq, size);
+    debugEnding += wasRemoved ? " removed" : " was not present";
+    debugFinalInformation("hash_remove", id, debugEnding);
 
     return wasRemoved;
   }
@@ -157,17 +158,34 @@ namespace jnp1 {
     debugInformation("hash_clear", std::to_string(id));
     auto hashTableIt = hash_tables.find(id);
     hash_table_t hashTable = hashTableIt -> second;
-    if (hashTableIt != hash_tables.end())
+    bool wasCleared = false;
+    if (hashTableIt != hash_tables.end()) {
       hashTable.clear();
+      wasCleared = true;
+    }
+
+    std::string debugEnding = wasCleared ? " cleared" : " was empty";
+    debugFinalInformation("hash_clear", id, debugEnding);
   }
 
   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
     debugInformation("hash_test", std::to_string(id));
+    bool isPresent = false;
     hash_tables_t::iterator hashTableIt = hash_tables.find(id);
     hash_table_t hashTable = hashTableIt -> second;
-    if (hashTableIt != hash_tables.end())
-      return hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
 
-    return false;
+    if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
+      invalidData("hash_remove", seq, size);
+      return false;
+    } 
+    else {
+      isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
+    }
+
+    std::string debugEnding = ", sequence " + getStringRepresentation(seq, size);
+    debugEnding += isPresent ? " is present" : " is not present";
+    debugFinalInformation("hash_test", id, debugEnding);
+
+    return isPresent;
   }
 }
