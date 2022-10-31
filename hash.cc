@@ -150,8 +150,8 @@ namespace jnp1 {
       return false;
     } 
     
-    hash_table_t hashTable = hashTableIt -> second;
-    bool wasRemoved = hashTable.erase(std::vector<uint64_t>(seq, seq + size));
+    //hash_table_t hashTable = hashTableIt -> second;
+    bool wasRemoved = (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
     std::string debugEnding = ", sequence " + getStringRepresentation(seq, size);
     debugEnding += wasRemoved ? " removed" : " was not present";
     debugFinalInformation("hash_remove", id, debugEnding);
@@ -165,7 +165,8 @@ namespace jnp1 {
     hash_table_t hashTable = hashTableIt -> second;
     bool wasCleared = false;
     if (hashTableIt != hash_tables.end()) {
-      hashTable.clear();
+      //hashTable.clear();
+      (hashTableIt->second).clear();
       wasCleared = true;
     }
 
