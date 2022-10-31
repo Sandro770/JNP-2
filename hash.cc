@@ -60,16 +60,20 @@ namespace {
   }
 
   std::string getStringRepresentation(uint64_t const *seq, size_t size) {
-    std::string rep = "\"";
-    for (int i = 0; i < size; i++) {
-      if (i > 0)
-        rep += " ";
-      rep += std::to_string(seq[i]);
+    if (seq == NULL) {
+      return "NULL";
     }
-    rep += "\"";
-    return rep;
+    else {
+      std::string rep = "\"";
+      for (int i = 0; i < size; i++) {
+        if (i > 0)
+          rep += " ";
+        rep += std::to_string(seq[i]);
+      }
+      rep += "\"";
+      return rep;
+    }
   }
-}
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
