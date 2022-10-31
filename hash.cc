@@ -172,9 +172,11 @@ namespace jnp1 {
     std::string debugEnding = wasCleared ? " cleared" : " was empty";
     debugFinalInformation("hash_clear", id, debugEnding);
   }
-
-  bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
-    debugInformation("hash_test", std::to_string(id));
+  
+   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
+    std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
+    debugInformation("hash_test", std::to_string(id) + ", " + 
+    stringRepresentationOfSeq + ", " + std::to_string(size));
     bool isPresent = false;
     hash_tables_t::iterator hashTableIt = hash_tables.find(id);
     hash_table_t hashTable = hashTableIt -> second;
@@ -187,7 +189,7 @@ namespace jnp1 {
       isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
     }
 
-    std::string debugEnding = ", sequence " + getStringRepresentation(seq, size);
+    std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
     debugEnding += isPresent ? " is present" : " is not present";
     debugFinalInformation("hash_test", id, debugEnding);
 
