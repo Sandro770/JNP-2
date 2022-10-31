@@ -74,6 +74,7 @@ namespace {
       return rep;
     }
   }
+}
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
@@ -165,7 +166,6 @@ namespace jnp1 {
     hash_table_t hashTable = hashTableIt -> second;
     bool wasCleared = false;
     if (hashTableIt != hash_tables.end()) {
-      //hashTable.clear();
       (hashTableIt->second).clear();
       wasCleared = true;
     }
@@ -173,8 +173,8 @@ namespace jnp1 {
     std::string debugEnding = wasCleared ? " cleared" : " was empty";
     debugFinalInformation("hash_clear", id, debugEnding);
   }
-  
-   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
+
+  bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
     debugInformation("hash_test", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
