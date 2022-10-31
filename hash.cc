@@ -37,8 +37,8 @@ namespace {
   hash_function_id_t numberOfCreatedHashes = initNumber();
 
   hash_tables_t initHashTables() {
-    hash_tables_t new_hash_table = {};
-    return new_hash_table;
+    static hash_tables_t *x = new hash_tables_t();
+    return *x;
   }
 
   hash_tables_t hash_tables = initHashTables();
