@@ -43,13 +43,17 @@ namespace {
     debug(functionName + ": hash table #" + std::to_string(id) + debugEnding);
   }
   
-  void invalidData(std::string function_type, uint64_t const *seq, size_t size) {
+  void invalidData(bool not_exist, size_t id, std::string function_type, uint64_t const *seq, size_t size) {
     if (seq == NULL) {
       debug(function_type + ": invalid pointer (NULL)");
     }
     
     if (size == 0) {
       debug(function_type + ": invalid size (0)");
+    }
+
+    if (not_exist) {
+      debugFinalInformation(function_type, id, " does not exist");
     }
   }
 
@@ -118,7 +122,7 @@ namespace jnp1 {
 
     auto hashTableIt = hash_tables.find(id);
     if ((hashTableIt == hash_tables.end()) || (seq == NULL) || (size == 0)) {
-      invalidData("hash_insert", seq, size);
+      invalidData(hashTableIt == hash_tables.end(), id, "hash_insert", seq, size);
       return false;
     }
 
@@ -149,7 +153,7 @@ namespace jnp1 {
 
     auto hashTableIt = hash_tables.find(id);
     if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
-      invalidData("hash_remove", seq, size);
+      invalidData(hashTableIt == hash_tables.end(), id, "hash_remove", seq, size);
       return false;
     } 
     
@@ -187,7 +191,7 @@ namespace jnp1 {
     hash_table_t hashTable = hashTableIt -> second;
 
     if (hashTableIt == hash_tables.end() || (seq == NULL) || (size == 0)) {
-      invalidData("hash_remove", seq, size);
+      invalidData(hashTableIt == hash_tables.end(), id, "hash_remove", seq, size);
       return false;
     } 
     else {
