@@ -17,3 +17,5 @@
 [ODP [2]]: obiekt klasy Hash 
 
 3) Jak dokładnie działa przechowywanie elementów w kontenerach? Jak dokładnie działa set?
+
+4) Format testów rocznikowych jeśli chodzi o logi nie zgadza się z formatem zadań przykładowych, przykładowe są bardziej spójne. Trzeba zapytać Peczara o co chodzi.
