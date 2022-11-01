@@ -89,7 +89,10 @@ namespace {
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
-    std::cerr <<"[" << &hash_function << "]\n";
+   // std::cerr <<"[" << &hash_function << "]\n";
+     if (debugModeOn) {
+      std::cerr << "hash_create(" << &hash_function << ")" << "\n";
+     }
       // debug("hash_create(" + hash_function + ")");
       //debugInformation("hash_create", hash_function);
       numberOfCreatedHashes++;
