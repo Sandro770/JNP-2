@@ -51,16 +51,16 @@ namespace {
   }
   
   void invalidData(bool not_exist, size_t id, std::string function_type, uint64_t const *seq, size_t size) {
+    if (not_exist) {
+      debugFinalInformation(function_type, id, " does not exist");
+    }
+
     if (seq == NULL) {
       debug(function_type + ": invalid pointer (NULL)");
     }
     
     if (size == 0) {
       debug(function_type + ": invalid size (0)");
-    }
-
-    if (not_exist) {
-      debugFinalInformation(function_type, id, " does not exist");
     }
   }
 
