@@ -6,6 +6,8 @@
 5) zwrócić uwagę na kolejność tworzeń np. stałych globalnych, czy mają być static czy coś ?
 6) dokumentacja
 7) format kodu 
+8) przetestować na studentsie testy 
+
 
 # Pytania:
 1) a)jak ustalić typ hash_function_t, jako typedef, using czy template function<> 

@@ -5,13 +5,13 @@
 #include <iostream>
 #include <string>
 
+// #ifdef NDEBUG
+//   const bool debugModeOn = false;
+// else
+  const bool debugModeOn = true;
+// #endif
+
 using hash_function_id_t = unsigned long;
-
-bool initDebug() {
-  return true;
-}
-
-const bool debugModeOn = initDebug();
 
 namespace {
   struct Hash;
@@ -25,7 +25,9 @@ namespace {
     Hash(hash_function_t funct) {
       function = funct;
     }
-    uint64_t operator () (seq_vector_t seq) const {
+
+    /// @brief Computes hash of a given sequence
+    uint64_t operator () (seq_vector_t seq) const { /// TODO wydaje mi się, że tutaj nie powinniśmy brać vectora przez wartość, ale jak biorę przez referencję to coś się psuje
       return function(&(seq[0]), seq.size());
     }
   };
@@ -37,39 +39,54 @@ namespace {
     return *x;
   }
 
+  /// @brief Prints debug message
+  /// Prints @p debugMessage if the debug mode is on 
+  /// @param debugMessage 
   void debug(std::string debugMessage) {
       if (debugModeOn)
         std::cerr << debugMessage << '\n';
   }
   
-   void debugInformation(std::string functionName, std::string id) {
-    debug(functionName + "(" + id + ")");
+  /// @brief Logs formatted debug message
+  /// @param functionName 
+  /// @param id 
+  void debugArgumentsInformation(std::string functionName, std::string arguments) {
+    debug(functionName + "(" + arguments + ")");
   }
   
+  /// @brief Logs how function handled it's role 
+  /// Adds formatted log: how function handled it's role considering given hash table
+  /// @param functionName 
+  /// @param id - id of considered hash table
+  /// @param debugEnding 
   void debugFinalInformation (std::string functionName, unsigned long id, std::string debugEnding) {
     debug(functionName + ": hash table #" + std::to_string(id) + debugEnding);
   }
   
-  void invalidData(bool not_exist, size_t id, std::string function_type, uint64_t const *seq, size_t size) {
+  /// @brief Logs invalid data for a given function
+  /// @param not_exist - tells if considered hash table exists
+  /// @param id - id of considered hash table
+  /// @param functionName 
+  /// @param seq - pointer to the sequence 
+  /// @param size - length of @p seq
+  void invalidData(bool not_exist, size_t id, std::string functionName, uint64_t const *seq, size_t size) {
     if (not_exist) {
-      debugFinalInformation(function_type, id, " does not exist");
+      debugFinalInformation(functionName, id, " does not exist");
     }
 
     if (seq == NULL) {
-      debug(function_type + ": invalid pointer (NULL)");
+      debug(functionName + ": invalid pointer (NULL)");
     }
     
     if (size == 0) {
-      debug(function_type + ": invalid size (0)");
+      debug(functionName + ": invalid size (0)");
     }
   }
 
-  void functionParamsPrintDebug(std::string functionName, std::vector<std::string> params) {
-    std::string paramsList;
-    // std::vector<std::string> v = {"234", 123}; 
-    // debug(functionName + "(" + params)
-  }
-
+  /// @brief Creates string from a sequence
+  /// @param seq - pointer to a sequence
+  /// @param size - length of sequence
+  /// @return "NULL" if seq equals NULL, otherwise sequence formatted sequence
   std::string getStringRepresentation(uint64_t const *seq, size_t size) {
     if (seq == NULL) {
       return "NULL";
@@ -89,20 +106,21 @@ namespace {
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
-    std::cerr <<"[" << &hash_function << "]\n";
-      // debug("hash_create(" + hash_function + ")");
-      //debugInformation("hash_create", hash_function);
-      numberOfCreatedHashes++;
-      hash_table_t hash_table(0, Hash(hash_function));
-      // int tmpasfsad = 5;
-      hash_tables().insert({(unsigned long)(numberOfCreatedHashes - 1), hash_table}); 
+    // std::stringstream s;
 
-      debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
-      return numberOfCreatedHashes - 1;
+    // s << &hash_function;
+    debugArgumentsInformation("hash_create", s.str());
+    std::cerr <<"[" << &hash_function << "]\n"; /// TODO- what if debug mode is disabled???
+    numberOfCreatedHashes++;
+    hash_table_t hash_table(0, Hash(hash_function));
+    hash_tables().insert({(unsigned long)(numberOfCreatedHashes - 1), hash_table}); 
+
+    debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
+    return numberOfCreatedHashes - 1;
   }
 
   void hash_delete(hash_function_id_t id) {
-    debugInformation("hash_delete", std::to_string(id));
+    debugArgumentsInformation("hash_delete", std::to_string(id));
     bool wasErased = hash_tables().erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
     
     std::string debugEnding = wasErased ? " deleted" : " does not exist";
@@ -110,7 +128,7 @@ namespace jnp1 {
   }
 
   size_t hash_size(unsigned long id) {
-    debugInformation("hash_size", std::to_string(id));
+    debugArgumentsInformation("hash_size", std::to_string(id));
     auto hashTablesIt = hash_tables().find(id);
     size_t answer = 0;
 
@@ -129,7 +147,7 @@ namespace jnp1 {
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
     
-    debugInformation("hash_insert", std::to_string(id) + ", " + 
+    debugArgumentsInformation("hash_insert", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     auto hashTableIt = hash_tables().find(id);
     if ((hashTableIt == hash_tables().end()) || (seq == NULL) || (size == 0)) {
@@ -151,7 +169,7 @@ namespace jnp1 {
 
   bool hash_remove(hash_function_id_t id, uint64_t const * seq, size_t size) {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-    debugInformation("hash_remove", std::to_string(id) + ", " + 
+    debugArgumentsInformation("hash_remove", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     // validateParameters();
     // debug("");
@@ -168,7 +186,6 @@ namespace jnp1 {
       return false;
     } 
     
-    //hash_table_t hashTable = hashTableIt -> second;
     bool wasRemoved = (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
     std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
     debugEnding += wasRemoved ? " removed" : " was not present";
@@ -178,9 +195,8 @@ namespace jnp1 {
   }
 
   void hash_clear(hash_function_id_t id) {
-    debugInformation("hash_clear", std::to_string(id));
+    debugArgumentsInformation("hash_clear", std::to_string(id));
     auto hashTableIt = hash_tables().find(id);
-    //hash_table_t hashTable = hashTableIt -> second;
     bool wasCleared = false;
     if (hashTableIt != hash_tables().end()) {
       if (!(hashTableIt->second).empty()) {
@@ -197,7 +213,7 @@ namespace jnp1 {
 
   bool hash_test(hash_function_id_t id, uint64_t const * seq, size_t size) {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-    debugInformation("hash_test", std::to_string(id) + ", " + 
+    debugArgumentsInformation("hash_test", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     bool isPresent = false;
     hash_tables_t::iterator hashTableIt = hash_tables().find(id);
