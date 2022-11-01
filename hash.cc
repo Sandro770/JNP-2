@@ -115,8 +115,8 @@ namespace jnp1 {
     size_t answer = 0;
 
     if (!(hashTablesIt == hash_tables().end())) {
-      std::string debugEnding = " contains " + std::to_string(answer) + " element(s)";
       answer = (hashTablesIt->second).size();
+      std::string debugEnding = " contains " + std::to_string(answer) + " element(s)";
       debugFinalInformation("hash_size", id, debugEnding);
     }
     else {
