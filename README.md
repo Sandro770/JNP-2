@@ -20,4 +20,8 @@
 
 3) Jak dokładnie działa przechowywanie elementów w kontenerach? Jak dokładnie działa set?
 
-4) Format testów rocznikowych jeśli chodzi o logi nie zgadza się z formatem zadań przykładowych, przykładowe są bardziej spójne. Trzeba zapytać Peczara o co chodzi.
+4) Format testów rocznikowych jeśli chodzi o logi nie zgadza się z formatem zadań przykładowych, przykładowe są bardziej spójne. Trzeba zapytać prof. o co chodzi.
+
+5) co z kopiowaniem całego vectora dla funkcji haszującej
+
+6) co jeśli hash_function = NULL? co jeśli jest tryb ndebug a co jeśli nie, czy mam zatrzymać program, czy muszę używać assercji?
