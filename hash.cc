@@ -4,12 +4,13 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <sstream>
 
-// #ifdef NDEBUG
-//   const bool debugModeOn = false;
-// else
-  const bool debugModeOn = true;
-// #endif
+#ifndef NDEBUG
+    const bool debugModeOn = true;
+#else
+    const bool debugModeOn = false;
+#endif
 
 using hash_function_id_t = unsigned long;
 
@@ -27,7 +28,7 @@ namespace {
     }
 
     /// @brief Computes hash of a given sequence
-    uint64_t operator () (seq_vector_t seq) const { /// TODO wydaje mi się, że tutaj nie powinniśmy brać vectora przez wartość, ale jak biorę przez referencję to coś się psuje
+    uint64_t operator () (seq_vector_t seq) const {
       return function(&(seq[0]), seq.size());
     }
   };
@@ -106,14 +107,13 @@ namespace {
 
 namespace jnp1 {
   hash_function_id_t hash_create(hash_function_t hash_function) {
-    // std::stringstream s;
+    std::stringstream ss;
+    ss << &hash_function;
+    debugArgumentsInformation("hash_create", ss.str());
 
-    // s << &hash_function;
-    debugArgumentsInformation("hash_create", s.str());
-    std::cerr <<"[" << &hash_function << "]\n"; /// TODO- what if debug mode is disabled???
     numberOfCreatedHashes++;
     hash_table_t hash_table(0, Hash(hash_function));
-    hash_tables().insert({(unsigned long)(numberOfCreatedHashes - 1), hash_table}); 
+    hash_tables().insert({numberOfCreatedHashes - 1UL, hash_table}); 
 
     debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
     return numberOfCreatedHashes - 1;
@@ -121,7 +121,7 @@ namespace jnp1 {
 
   void hash_delete(hash_function_id_t id) {
     debugArgumentsInformation("hash_delete", std::to_string(id));
-    bool wasErased = hash_tables().erase(id); // TODO: naruszenie ochrony pamięci w tej linijce, możliwe, że podobny problem co w hash_size()
+    bool wasErased = hash_tables().erase(id);
     
     std::string debugEnding = wasErased ? " deleted" : " does not exist";
     debugFinalInformation("hash_delete", id, debugEnding);
@@ -146,7 +146,7 @@ namespace jnp1 {
 
   bool hash_insert(hash_function_id_t id, uint64_t const * seq, size_t size) {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-    
+
     debugArgumentsInformation("hash_insert", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     auto hashTableIt = hash_tables().find(id);
@@ -155,12 +155,10 @@ namespace jnp1 {
       return false;
     }
 
- //   hash_table_t hashTable = hashTableIt -> second;
-
     std::vector<uint64_t> copySeq(seq, seq + size);
-    bool wasInserted = (hashTableIt->second).insert(copySeq).second; //hashTable.insert(copySeq).second;
-    // Wcześniejsza wersja operowała na kopii, dlatego prawdopodobnie ciąg nie był wklejony do struktury danych
-    std::string  debugEnding = ", sequence " + stringRepresentationOfSeq;
+    bool wasInserted = (hashTableIt->second).insert(copySeq).second;
+
+    std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
     debugEnding += wasInserted ? " inserted" : " was present";
     debugFinalInformation("hash_insert", id, debugEnding);
 
@@ -171,14 +169,6 @@ namespace jnp1 {
     std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
     debugArgumentsInformation("hash_remove", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
-    // validateParameters();
-    // debug("");
-    // if (seq == NULL) {
-
-    // }
-    // if (size == 0) {
-
-    // }
 
     auto hashTableIt = hash_tables().find(id);
     if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
@@ -198,6 +188,7 @@ namespace jnp1 {
     debugArgumentsInformation("hash_clear", std::to_string(id));
     auto hashTableIt = hash_tables().find(id);
     bool wasCleared = false;
+
     if (hashTableIt != hash_tables().end()) {
       if (!(hashTableIt->second).empty()) {
         (hashTableIt->second).clear();
@@ -216,7 +207,7 @@ namespace jnp1 {
     debugArgumentsInformation("hash_test", std::to_string(id) + ", " + 
     stringRepresentationOfSeq + ", " + std::to_string(size));
     bool isPresent = false;
-    hash_tables_t::iterator hashTableIt = hash_tables().find(id);
+    auto hashTableIt = hash_tables().find(id);
 
     if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
       invalidData(hashTableIt == hash_tables().end(), id, "hash_test", seq, size);
