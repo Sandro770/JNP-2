@@ -41,3 +41,4 @@
 8) stddef.h i inne nie muszą być koniecznie w iostream, więc trzeba je includować w kompilacji cpp też 
 9) ogólne poprawki stylistyczne
 10) używać makr do danych diagnostycznych
+11) hash_function_id_t dokumentować, numberOfCreatedHashes dokumentować
