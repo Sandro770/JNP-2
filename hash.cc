@@ -108,9 +108,15 @@ std::string getStringRepresentation(uint64_t const *seq, size_t size) {
 
 namespace jnp1 {
 hash_function_id_t hash_create(hash_function_t hash_function) {
-  std::stringstream ss;
-  ss << &hash_function;
-  debugArgumentsInformation("hash_create", ss.str());
+  std::string logArguments;
+  if (hash_function == NULL) {
+    logArguments = "NULL";
+  } else {
+    std::stringstream ss;
+    ss << &hash_function;
+    logArguments = ss.str();
+  }
+  debugArgumentsInformation("hash_create", logArguments);
 
   numberOfCreatedHashes++;
   hash_table_t hash_table(0, Hash(hash_function));
