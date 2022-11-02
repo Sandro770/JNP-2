@@ -3,23 +3,18 @@
 
 #ifdef __cplusplus
     #include <iostream>
-
-typedef uint64_t(*hash_function_t)(uint64_t const*, size_t);  
-    namespace jnp1{
-    extern "C" {
-
 #else
     #include <stddef.h>
     #include <stdint.h>
     #include <stdbool.h>
-typedef uint64_t(*hash_function_t)(uint64_t const*, size_t);  
-
 #endif
 
-// typedef uint64_t(*hash_function_t)(uint64_t const*, size_t); /// type of hash function 
+typedef uint64_t(*hash_function_t)(uint64_t const*, size_t); 
 
-// #ifdef __cplusplus
-// #endif
+#ifdef __cplusplus
+    namespace jnp1{
+    extern "C" {
+#endif
 
 /// @brief Creates hash table 
 /// @param hash_function - pointer to hash function used in a created hash table
@@ -65,8 +60,8 @@ void hash_clear(unsigned long id);
 bool hash_test(unsigned long id, uint64_t const * seq, size_t size);
 
 #ifdef __cplusplus
-}
-}
+    }
+    }
 #endif
 
 #endif
