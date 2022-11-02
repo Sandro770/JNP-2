@@ -94,7 +94,7 @@ namespace {
     }
     else {
       std::string rep = "\"";
-      for (int i = 0; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         if (i > 0)
           rep += " ";
         rep += std::to_string(seq[i]);
