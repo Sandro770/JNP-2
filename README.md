@@ -32,13 +32,17 @@
 
 # TODO:
 1) nieczytelny kod - niejasne funkcje - nie widać podziału na diagnostykę i program
-2) oddzielne dać typedef dla kompilacji c, oddzielnie using dla kompilacji c++
-3) dane diagnostyczne źle wypisywane, powinny być możliwe do zoptymalizowania jakieś consty, czy coś i też nie ma referencji więc tym bardziej źle 
-4) niepotrzebnie zdublowany namespace jnp1 w pliku hash.cc
-5) nie może być kopii vectora, musi być przez referencję 
-6) inicjowanie structa przez Hash(): () {}, czyli poprzez listę inicjalizacyjną
-7) zdublowany typedef w .h i .cc 
-8) stddef.h i inne nie muszą być koniecznie w iostream, więc trzeba je includować w kompilacji cpp też 
-9) ogólne poprawki stylistyczne
-10) używać makr do danych diagnostycznych
-11) hash_function_id_t dokumentować, numberOfCreatedHashes dokumentować
+   a) Ma być podział pod kątem przestrzeni nazw czy co?
+3) oddzielne dać typedef dla kompilacji c, oddzielnie using dla kompilacji c++
+4) dane diagnostyczne źle wypisywane, powinny być możliwe do zoptymalizowania jakieś consty, czy coś i też nie ma referencji więc tym bardziej źle 
+   b) referencje tylko do danych diagnostycznych trzeba dodać? Co to znaczy jakieś consty?
+6) niepotrzebnie zdublowany namespace jnp1 w pliku hash.cc
+7) nie może być kopii vectora, musi być przez referencję 
+8) inicjowanie structa przez Hash(): () {}, czyli poprzez listę inicjalizacyjną
+   c) ??
+10) zdublowany typedef w .h i .cc // chyba poprawione
+11) stddef.h i inne nie muszą być koniecznie w iostream, więc trzeba je includować w kompilacji cpp też // chyba poprawione
+12) ogólne poprawki stylistyczne
+13) używać makr do danych diagnostycznych
+   d) Nie do końca wiem jak to rozumieć
+15) hash_function_id_t dokumentować, numberOfCreatedHashes dokumentować
