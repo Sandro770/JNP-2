@@ -71,19 +71,35 @@ void debugFinalInformation(std::string functionName, unsigned long id,
 /// @param functionName
 /// @param seq - pointer to the sequence
 /// @param size - length of @p seq
-void invalidData(bool not_exist, size_t id, std::string functionName,
+bool invalidData(std::string functionName,
                  uint64_t const *seq, size_t size) {
-  if (not_exist) {
-    debugFinalInformation(functionName, id, " does not exist");
-  }
+  bool returned_value = false;
 
   if (seq == NULL) {
     debug(functionName + ": invalid pointer (NULL)");
+    returned_value = true;
   }
 
   if (size == 0) {
     debug(functionName + ": invalid size (0)");
+    returned_value = true;
   }
+
+  return returned_value;
+}
+
+bool special_cases(bool not_exist, size_t id, std::string functionName,
+                   uint64_t const *seq, size_t size) {
+  if (invalidData(functionName, seq, size)) {
+    return true;
+  }
+  
+  if (not_exist) {
+    debugFinalInformation(functionName, id, " does not exist");
+    return true;
+  }
+
+  return false;
 }
 
 /// @brief Creates string from a sequence
@@ -158,11 +174,12 @@ bool hash_insert(hash_function_id_t id, uint64_t const *seq, size_t size) {
                                                stringRepresentationOfSeq +
                                                ", " + std::to_string(size));
   auto hashTableIt = hash_tables().find(id);
-  if ((hashTableIt == hash_tables().end()) || (seq == NULL) || (size == 0)) {
-    invalidData(hashTableIt == hash_tables().end(), id, "hash_insert", seq,
-                size);
+
+  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_insert", seq,
+    size)) {
     return false;
   }
+  
 
   std::vector<uint64_t> copySeq(seq, seq + size);
   bool wasInserted = (hashTableIt->second).insert(copySeq).second;
@@ -181,9 +198,9 @@ bool hash_remove(hash_function_id_t id, uint64_t const *seq, size_t size) {
                                                ", " + std::to_string(size));
 
   auto hashTableIt = hash_tables().find(id);
-  if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
-    invalidData(hashTableIt == hash_tables().end(), id, "hash_remove", seq,
-                size);
+
+  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_remove", seq,
+    size)) {
     return false;
   }
 
@@ -221,14 +238,13 @@ bool hash_test(hash_function_id_t id, uint64_t const *seq, size_t size) {
   bool isPresent = false;
   auto hashTableIt = hash_tables().find(id);
 
-  if (hashTableIt == hash_tables().end() || (seq == NULL) || (size == 0)) {
-    invalidData(hashTableIt == hash_tables().end(), id, "hash_test", seq, size);
+  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_test", seq,
+    size)) {
     return false;
-  } else {
-    hash_table_t hashTable = hashTableIt->second;
-    isPresent =
-        hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
   }
+
+  hash_table_t hashTable = hashTableIt->second;
+  isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
 
   std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
   debugEnding += isPresent ? " is present" : " is not present";
