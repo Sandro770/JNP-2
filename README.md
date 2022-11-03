@@ -29,6 +29,7 @@
 # Informacje z konsultacji:
 1) format diagnostycznych nie musi mieć jakiegoś ścisłego formatu
 2) Jak hash_create dostanie NULL'a to powinien zrobić coś najmniej złego
+   ??? Co to znaczy?
 
 # TODO:
 1) nieczytelny kod - niejasne funkcje - nie widać podziału na diagnostykę i program
