@@ -59,6 +59,9 @@ int main()
     S s;      // calls S::S()
     S s2(10); // calls S::S(int)
 }
+
+
+
 10) zdublowany typedef w .h i .cc // chyba poprawione
 11) stddef.h i inne nie muszą być koniecznie w iostream, więc trzeba je includować w kompilacji cpp też // chyba poprawione
 12) ogólne poprawki stylistyczne
