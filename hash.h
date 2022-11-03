@@ -1,20 +1,19 @@
 #ifndef HASH_H
 #define HASH_H
 
-#ifdef __cplusplus
-#include <iostream>
-#else
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#endif
-
-typedef uint64_t (*hash_function_t)(uint64_t const *, size_t);
 
 #ifdef __cplusplus
+#include <iostream>
+using hash_function_t = uint64_t(*)(uint64_t const *, size_t);
 namespace jnp1 {
 extern "C" {
+#else
+typedef uint64_t (*hash_function_t)(uint64_t const *, size_t);
 #endif
+
 
 /// @brief Creates hash table
 /// @param hash_function - pointer to hash function used in a created hash table
