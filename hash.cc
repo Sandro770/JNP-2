@@ -22,7 +22,7 @@ using hash_tables_t = std::unordered_map<hash_table_id_t, hash_table_t>;
 
 struct Hash {
   const hash_function_t function;
-  Hash(hash_function_t funct) : function(funct) { }
+  Hash(hash_function_t funct) : function(funct) {}
 
   /// @brief Computes hash of a given sequence
   uint64_t operator()(seq_vector_t const &seq) const {
@@ -30,20 +30,19 @@ struct Hash {
   }
 };
 
-hash_table_id_t numberOfCreatedHashes = 0; /// It's used as id provider for created hash tables
+hash_table_id_t numberOfCreatedHashes =
+    0; /// It's used as id provider for created hash tables
 
 hash_tables_t &hash_tables() {
   static hash_tables_t *new_table = new hash_tables_t();
   return *new_table;
 }
- 
-template<typename ...Args>
-void log(Args && ...args)
-{
-  if (debugModeOn)  
+
+template <typename... Args> void log(Args &&...args) {
+  if (debugModeOn)
     (std::cerr << ... << args);
 }
- 
+
 void logArray(uint64_t const *&seq, size_t &size) {
   if (debugModeOn) {
     if (seq == NULL) {
@@ -62,7 +61,8 @@ void logArray(uint64_t const *&seq, size_t &size) {
   }
 }
 
-bool invalidHashClearInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id) {
+bool invalidHashClearInput(hash_tables_t::iterator hashTableIt,
+                           hash_table_id_t id) {
   if (hashTableIt == hash_tables().end()) {
     log("hash_clear: hash table #", id, " does not exist\n");
     return true;
@@ -75,25 +75,27 @@ bool invalidInputHashCreate(hash_function_t &hash_function) {
     log("hash_create(NULL)\n");
     log("hash_create: invalid pointer (NULL)\n");
     return true;
-  }
-  else {
+  } else {
     log("hash_create(", hash_function, ")\n");
     return false;
   }
 }
 
 /// @brief Checks if the input is valid
-/// Checks if the input is valid: seq is not null, size is not zero. 
+/// Checks if the input is valid: seq is not null, size is not zero.
 /// If the input is correct, then it checks if the considered hash table exists.
 /// @param hashTableIt - considered hash table
 /// @param id - id of considered hash table
-/// @param seq 
-/// @param size 
-/// @param functionName 
-/// @return false if the input is incorrect or considered hash table does not exist, otherwise true
-bool invalidInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id, uint64_t const *seq, size_t size, const std::string &functionName) {
+/// @param seq
+/// @param size
+/// @param functionName
+/// @return false if the input is incorrect or considered hash table does not
+/// exist, otherwise true
+bool invalidInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id,
+                  uint64_t const *seq, size_t size,
+                  const std::string &functionName) {
   bool isInvalid = false;
-  
+
   if (seq == NULL) {
     log(functionName, ": invalid pointer (NULL)\n");
     isInvalid = true;
@@ -116,7 +118,8 @@ bool hashTableExists(hash_tables_t::iterator it) {
   return it != hash_tables().end();
 }
 
-bool insert(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
+bool insert(hash_tables_t::iterator hashTableIt, uint64_t const *seq,
+            size_t size) {
   std::vector<uint64_t> copySeq(seq, seq + size);
   bool wasInserted = (hashTableIt->second).insert(copySeq).second;
 
@@ -133,7 +136,7 @@ bool insert(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t siz
 
 bool clear(hash_tables_t::iterator hashTableIt) {
   log("hash_clear: hash table #", hashTableIt->first);
-  
+
   if (!(hashTableIt->second).empty()) {
     (hashTableIt->second).clear();
 
@@ -145,9 +148,11 @@ bool clear(hash_tables_t::iterator hashTableIt) {
   return false;
 }
 
-bool test(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
+bool test(hash_tables_t::iterator hashTableIt, uint64_t const *seq,
+          size_t size) {
   hash_table_t hashTable = hashTableIt->second;
-  bool isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
+  bool isPresent =
+      hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
 
   log("hash_test: hash table #", hashTableIt->first, ", sequence ");
   logArray(seq, size);
@@ -160,14 +165,16 @@ bool test(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size)
   return isPresent;
 }
 
-bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
-  bool wasRemoved = (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
-  
+bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq,
+            size_t size) {
+  bool wasRemoved =
+      (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
+
   log("hash_remove: hash table #", hashTableIt->first, ", sequence ");
   logArray(seq, size);
   if (wasRemoved) {
     log(" removed\n");
-  } else { 
+  } else {
     log(" was not present\n");
   }
 
@@ -210,7 +217,7 @@ size_t hash_size(unsigned long id) {
 
   if (hashTableExists(hashTablesIt)) {
     answer = (hashTablesIt->second).size();
-    
+
     log("hash_size: hash table #", id, " contains ", answer, " element(s)\n");
   } else {
     log("hash_size: hash table #", id, " does not exist\n");
@@ -223,13 +230,13 @@ bool hash_insert(hash_table_id_t id, uint64_t const *seq, size_t size) {
   log("hash_insert(", id, ", ");
   logArray(seq, size);
   log(", ", size, ")\n");
-  
+
   auto hashTableIt = hash_tables().find(id);
 
   if (invalidInput(hashTableIt, id, seq, size, "hash_insert")) {
     return false;
   }
-  
+
   return insert(hashTableIt, seq, size);
 }
 
@@ -251,11 +258,11 @@ void hash_clear(hash_table_id_t id) {
   log("hash_clear(", id, ")\n");
 
   auto hashTableIt = hash_tables().find(id);
-  
+
   if (invalidHashClearInput(hashTableIt, id)) {
     return;
   }
-  
+
   clear(hashTableIt);
 }
 
