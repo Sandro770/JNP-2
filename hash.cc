@@ -33,8 +33,8 @@ struct Hash {
 hash_table_id_t numberOfCreatedHashes = 0; /// It's used as id provider for created hash tables
 
 hash_tables_t &hash_tables() {
-  static hash_tables_t *new_table = new hash_tables_t();
-  return *new_table
+  static hash_tables_t *x = new hash_tables_t();
+  return *x;
 }
 
 template<typename ...Args>
