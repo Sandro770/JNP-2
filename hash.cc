@@ -34,7 +34,7 @@ hash_table_id_t numberOfCreatedHashes = 0; /// It's used as id provider for crea
 
 hash_tables_t &hash_tables() {
   static hash_tables_t *new_table = new hash_tables_t();
-  return *new_table
+  return *new_table;
 }
 
 template<typename ...Args>
