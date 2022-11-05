@@ -77,3 +77,4 @@ int main()
    d) Nie do końca wiem jak to rozumieć [Odp]: używać #define, przykład: #define DEBUG(x) fprintf(stderr, x), i potem wołac tylko DEBUG(coś)
    [DONE]
 15) hash_function_id_t dokumentować, numberOfCreatedHashes dokumentować
+[DONE]

@@ -12,21 +12,13 @@ const bool debugModeOn = true;
 const bool debugModeOn = false;
 #endif
 
-template<typename ...Args>
-void log(Args && ...args)
-{
-  if (debugModeOn)  
-    (std::cerr << ... << args);
-}
-
-using hash_function_id_t = unsigned long;
-
 namespace {
 struct Hash;
 
 using seq_vector_t = std::vector<uint64_t>;
 using hash_table_t = std::unordered_set<seq_vector_t, Hash>;
-using hash_tables_t = std::unordered_map<hash_function_id_t, hash_table_t>;
+using hash_table_id_t = unsigned long;
+using hash_tables_t = std::unordered_map<hash_table_id_t, hash_table_t>;
 
 struct Hash {
   const hash_function_t function;
@@ -38,11 +30,18 @@ struct Hash {
   }
 };
 
-hash_function_id_t numberOfCreatedHashes = 0;
+hash_table_id_t numberOfCreatedHashes = 0; /// It's used as id provider for created hash tables
 
 hash_tables_t &hash_tables() {
   static hash_tables_t *x = new hash_tables_t();
   return *x;
+}
+
+template<typename ...Args>
+void log(Args && ...args)
+{
+  if (debugModeOn)  
+    (std::cerr << ... << args);
 }
 
 void logArray(uint64_t const *&seq, size_t &size) {
@@ -61,7 +60,7 @@ void logArray(uint64_t const *&seq, size_t &size) {
   }
 }
 
-bool invalidHashClearInput(hash_tables_t::iterator hashTableIt, hash_function_id_t id) {
+bool invalidHashClearInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id) {
   if (hashTableIt == hash_tables().end()) {
     log("hash_clear: hash table #", id, " does not exist\n");
     return true;
@@ -81,7 +80,7 @@ bool invalidInputHashCreate(hash_function_t &hash_function) {
   }
 }
 
-bool invalidInput(hash_tables_t::iterator hashTableIt, hash_function_id_t id, uint64_t const *seq, size_t size, const std::string &functionName) {
+bool invalidInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id, uint64_t const *seq, size_t size, const std::string &functionName) {
   bool isInvalid = false;
   
   if (seq == NULL) {
@@ -165,7 +164,7 @@ bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t siz
 } // namespace
 
 namespace jnp1 {
-hash_function_id_t hash_create(hash_function_t hash_function) {
+hash_table_id_t hash_create(hash_function_t hash_function) {
   if (invalidInputHashCreate(hash_function))
     return 0;
 
@@ -177,7 +176,7 @@ hash_function_id_t hash_create(hash_function_t hash_function) {
   return numberOfCreatedHashes++;
 }
 
-void hash_delete(hash_function_id_t id) {
+void hash_delete(hash_table_id_t id) {
   log("hash_delete(", id, ")\n");
 
   bool wasErased = hash_tables().erase(id);
@@ -206,7 +205,7 @@ size_t hash_size(unsigned long id) {
   return answer;
 }
 
-bool hash_insert(hash_function_id_t id, uint64_t const *seq, size_t size) {
+bool hash_insert(hash_table_id_t id, uint64_t const *seq, size_t size) {
   log("hash_insert(", id, ", ");
   logArray(seq, size);
   log(", ", size, ")\n");
@@ -220,7 +219,7 @@ bool hash_insert(hash_function_id_t id, uint64_t const *seq, size_t size) {
   return insert(hashTableIt, seq, size);
 }
 
-bool hash_remove(hash_function_id_t id, uint64_t const *seq, size_t size) {
+bool hash_remove(hash_table_id_t id, uint64_t const *seq, size_t size) {
   log("hash_remove(", id, ", ");
   logArray(seq, size);
   log(", ", size, ")\n");
@@ -234,7 +233,7 @@ bool hash_remove(hash_function_id_t id, uint64_t const *seq, size_t size) {
   return remove(hashTableIt, seq, size);
 }
 
-void hash_clear(hash_function_id_t id) {
+void hash_clear(hash_table_id_t id) {
   log("hash_clear(", id, ")\n");
 
   auto hashTableIt = hash_tables().find(id);
@@ -246,7 +245,7 @@ void hash_clear(hash_function_id_t id) {
   clear(hashTableIt);
 }
 
-bool hash_test(hash_function_id_t id, uint64_t const *seq, size_t size) {
+bool hash_test(hash_table_id_t id, uint64_t const *seq, size_t size) {
   log("hash_test(", id, ", ");
   logArray(seq, size);
   log(", ", size, ")\n");
