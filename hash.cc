@@ -50,12 +50,13 @@ void logArray(uint64_t const *&seq, size_t &size) {
       std::cerr << "NULL";
     } else {
       std::cerr << "\"";
-      for (size_t i = 0; i < size; i++)
+      for (size_t i = 0; i < size; i++) {
         if (i == size - 1) {
           std::cerr << seq[i];
         } else {
           std::cerr << seq[i] << ' ';
         }
+      }
       std::cerr << "\"";
     }
   }
