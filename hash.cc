@@ -24,15 +24,16 @@ struct Hash {
   const hash_function_t function;
   Hash(hash_function_t funct) : function(funct) {}
 
-  /// @brief Computes hash of a given sequence
+  /// @brief Computes hash of a given sequence.
   uint64_t operator()(seq_vector_t const &seq) const {
     return function(seq.data(), seq.size());
   }
 };
 
-/// It's used as id provider for created hash tables
+/// It's used as id provider for created hash tables.
 hash_table_id_t numberOfCreatedHashes = 0;
 
+/// Set of created hash tables.
 hash_tables_t &hash_tables() {
   static hash_tables_t *new_table = new hash_tables_t();
   return *new_table;
@@ -81,16 +82,16 @@ bool invalidInputHashCreate(hash_function_t &hash_function) {
   }
 }
 
-/// @brief Checks if the input is valid
+/// @brief Checks if the input is valid.
 /// Checks if the input is valid: seq is not null, size is not zero.
 /// If the input is correct, then it checks if the considered hash table exists.
-/// @param hashTableIt - considered hash table
-/// @param id - id of considered hash table
-/// @param seq
-/// @param size
-/// @param functionName
+/// @param hashTableIt - considered hash table;
+/// @param id - id of considered hash table;
+/// @param seq;
+/// @param size;
+/// @param functionName;
 /// @return false if the input is incorrect or considered hash table does not
-/// exist, otherwise true
+/// exist, otherwise true.
 bool invalidInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id,
                   uint64_t const *seq, size_t size,
                   const std::string &functionName) {
