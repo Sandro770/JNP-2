@@ -30,8 +30,8 @@ struct Hash {
   }
 };
 
-hash_table_id_t numberOfCreatedHashes =
-    0; /// It's used as id provider for created hash tables
+/// It's used as id provider for created hash tables
+hash_table_id_t numberOfCreatedHashes = 0;
 
 hash_tables_t &hash_tables() {
   static hash_tables_t *new_table = new hash_tables_t();
