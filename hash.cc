@@ -36,14 +36,14 @@ hash_tables_t &hash_tables() {
   static hash_tables_t *new_table = new hash_tables_t();
   return *new_table;
 }
-
+ 
 template<typename ...Args>
 void log(Args && ...args)
 {
   if (debugModeOn)  
     (std::cerr << ... << args);
 }
-
+ 
 void logArray(uint64_t const *&seq, size_t &size) {
   if (debugModeOn) {
     if (seq == NULL) {
@@ -82,6 +82,15 @@ bool invalidInputHashCreate(hash_function_t &hash_function) {
   }
 }
 
+/// @brief Checks if the input is valid
+/// Checks if the input is valid: seq is not null, size is not zero. 
+/// If the input is correct, then it checks if the considered hash table exists.
+/// @param hashTableIt - considered hash table
+/// @param id - id of considered hash table
+/// @param seq 
+/// @param size 
+/// @param functionName 
+/// @return false if the input is incorrect or considered hash table does not exist, otherwise true
 bool invalidInput(hash_tables_t::iterator hashTableIt, hash_table_id_t id, uint64_t const *seq, size_t size, const std::string &functionName) {
   bool isInvalid = false;
   
