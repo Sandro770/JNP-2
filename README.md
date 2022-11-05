@@ -34,13 +34,17 @@
 # TODO:
 1) nieczytelny kod - niejasne funkcje - nie widać podziału na diagnostykę i program
    a) Ma być podział pod kątem przestrzeni nazw czy co? [Odp]: Chodzi o ciało funkcji, żeby było więcej funkcji pomocniczych i było widać, że ta linijka jest od diagnostyki, a ta od tego co program ma faktycznie robić
+   [DONE]
 3) oddzielne dać typedef dla kompilacji c, oddzielnie using dla kompilacji c++
 4) dane diagnostyczne źle wypisywane, powinny być możliwe do zoptymalizowania jakieś consty, czy coś i też nie ma referencji więc tym bardziej źle 
    b) referencje tylko do danych diagnostycznych trzeba dodać? Co to znaczy jakieś consty? [Odp]: Ogólnie cel jest taki, żeby kompilator mógł zoptymalizować to wypisywanie danych diagnostycznych, a im więcej wywołań jakichś funkcji, tym mniejsza szansa, że kompilator to zoptymalizuje, dlatego najlepsze są makra, bo tam nie ma żadnych wywołań funkcji
+   [DONE]
 6) niepotrzebnie zdublowany namespace jnp1 w pliku hash.cc
 7) nie może być kopii vectora, musi być przez referencję 
+   [DONE]
 8) inicjowanie structa przez Hash(): () {}, czyli poprzez listę inicjalizacyjną
    c) ?? [Odp]: Przykład (głównie chodzi o ten fragment: "S() : n(7) {}")
+   [DONE]
 struct S
 {
     int n;
@@ -67,4 +71,5 @@ int main()
 12) ogólne poprawki stylistyczne
 13) używać makr do danych diagnostycznych
    d) Nie do końca wiem jak to rozumieć [Odp]: używać #define, przykład: #define DEBUG(x) fprintf(stderr, x), i potem wołac tylko DEBUG(coś)
+   [DONE]
 15) hash_function_id_t dokumentować, numberOfCreatedHashes dokumentować

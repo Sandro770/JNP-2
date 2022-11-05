@@ -12,6 +12,13 @@ const bool debugModeOn = true;
 const bool debugModeOn = false;
 #endif
 
+template<typename ...Args>
+void log(Args && ...args)
+{
+  if (debugModeOn)  
+    (std::cerr << ... << args);
+}
+
 using hash_function_id_t = unsigned long;
 
 namespace {
@@ -22,12 +29,12 @@ using hash_table_t = std::unordered_set<seq_vector_t, Hash>;
 using hash_tables_t = std::unordered_map<hash_function_id_t, hash_table_t>;
 
 struct Hash {
-  hash_function_t function;
-  Hash(hash_function_t funct) { function = funct; }
+  const hash_function_t function;
+  Hash(hash_function_t funct) : function(funct) { }
 
   /// @brief Computes hash of a given sequence
-  uint64_t operator()(seq_vector_t seq) const {
-    return function(&(seq[0]), seq.size());
+  uint64_t operator()(seq_vector_t const &seq) const {
+    return function(seq.data(), seq.size());
   }
 };
 
@@ -38,218 +45,218 @@ hash_tables_t &hash_tables() {
   return *x;
 }
 
-/// @brief Prints debug message
-/// Prints @p debugMessage if the debug mode is on
-/// @param debugMessage
-void debug(std::string debugMessage) {
-  if (debugModeOn)
-    std::cerr << debugMessage << '\n';
-}
-
-/// @brief Logs formatted debug message
-/// @param functionName
-/// @param id
-void debugArgumentsInformation(std::string functionName,
-                               std::string arguments) {
-  debug(functionName + "(" + arguments + ")");
-}
-
-/// @brief Logs how function handled it's role
-/// Adds formatted log: how function handled it's role considering given hash
-/// table
-/// @param functionName
-/// @param id - id of considered hash table
-/// @param debugEnding
-void debugFinalInformation(std::string functionName, unsigned long id,
-                           std::string debugEnding) {
-  debug(functionName + ": hash table #" + std::to_string(id) + debugEnding);
-}
-
-/// @brief Logs invalid data for a given function
-/// @param not_exist - tells if considered hash table exists
-/// @param id - id of considered hash table
-/// @param functionName
-/// @param seq - pointer to the sequence
-/// @param size - length of @p seq
-bool invalidData(std::string functionName,
-                 uint64_t const *seq, size_t size) {
-  bool returned_value = false;
-
-  if (seq == NULL) {
-    debug(functionName + ": invalid pointer (NULL)");
-    returned_value = true;
+void logArray(uint64_t const *&seq, size_t &size) {
+  if (debugModeOn) {
+    if (seq == NULL) {
+      std::cerr << "NULL";
+    } else {
+      std::cerr << "\"";
+      for (size_t i = 0; i < size; i++)
+        if (i == size - 1)
+          std::cerr << seq[i];
+        else 
+          std::cerr << seq[i] << ' ';
+      std::cerr << "\"";
+    }
   }
-
-  if (size == 0) {
-    debug(functionName + ": invalid size (0)");
-    returned_value = true;
-  }
-
-  return returned_value;
 }
 
-bool special_cases(bool not_exist, size_t id, std::string functionName,
-                   uint64_t const *seq, size_t size) {
-  if (invalidData(functionName, seq, size)) {
+bool invalidHashClearInput(hash_tables_t::iterator hashTableIt, hash_function_id_t id) {
+  if (hashTableIt == hash_tables().end()) {
+    log("hash_clear: hash table #", id, " does not exist\n");
     return true;
   }
-  
-  if (not_exist) {
-    debugFinalInformation(functionName, id, " does not exist");
-    return true;
-  }
-
   return false;
 }
 
-/// @brief Creates string from a sequence
-/// @param seq - pointer to a sequence
-/// @param size - length of sequence
-/// @return "NULL" if seq equals NULL, otherwise sequence formatted sequence
-std::string getStringRepresentation(uint64_t const *seq, size_t size) {
-  if (seq == NULL) {
-    return "NULL";
-  } else {
-    std::string rep = "\"";
-    for (size_t i = 0; i < size; i++) {
-      if (i > 0)
-        rep += " ";
-      rep += std::to_string(seq[i]);
-    }
-    rep += "\"";
-    return rep;
+bool invalidInputHashCreate(hash_function_t &hash_function) {
+  if (hash_function == NULL) {
+    log("hash_create(NULL)\n");
+    log("hash_create: invalid pointer (NULL)\n");
+    return true;
+  }
+  else {
+    log("hash_create(", hash_function, ")\n");
+    return false;
   }
 }
+
+bool invalidInput(hash_tables_t::iterator hashTableIt, hash_function_id_t id, uint64_t const *seq, size_t size, const std::string &functionName) {
+  bool isInvalid = false;
+  
+  if (seq == NULL) {
+    log(functionName, ": invalid pointer (NULL)\n");
+    isInvalid = true;
+  }
+
+  if (size == 0) {
+    log(functionName, ": invalid size (0)\n");
+    isInvalid = true;
+  }
+
+  if (!isInvalid && hashTableIt == hash_tables().end()) {
+    log(functionName, ": hash table #", id, " does not exist\n");
+    isInvalid = true;
+  }
+
+  return isInvalid;
+}
+
+bool hashTableExists(hash_tables_t::iterator it) {
+  return it != hash_tables().end();
+}
+
+bool insert(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
+  std::vector<uint64_t> copySeq(seq, seq + size);
+  bool wasInserted = (hashTableIt->second).insert(copySeq).second;
+
+  log("hash_insert: hash table #", hashTableIt->first, ", sequence ");
+  logArray(seq, size);
+  if (wasInserted)
+    log(" inserted\n");
+  else
+    log(" was present\n");
+
+  return wasInserted;
+}
+
+bool clear(hash_tables_t::iterator hashTableIt) {
+  log("hash_clear: hash table #", hashTableIt->first);
+  
+  if (!(hashTableIt->second).empty()) {
+    (hashTableIt->second).clear();
+
+    log(" cleared\n");
+    return true;
+  }
+
+  log(" was empty\n");
+  return false;
+}
+
+bool test(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
+  hash_table_t hashTable = hashTableIt->second;
+  bool isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
+
+  log("hash_test: hash table #", hashTableIt->first, ", sequence ");
+  logArray(seq, size);
+  if (isPresent) {
+    log(" is present\n");
+  } else {
+    log(" is not present\n");
+  }
+
+  return isPresent;
+}
+
+bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t size) {
+  bool wasRemoved = (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
+  
+  log("hash_remove: hash table #", hashTableIt->first, ", sequence ");
+  logArray(seq, size);
+  if (wasRemoved)
+    log(" removed\n");
+  else 
+    log(" was not present\n");
+
+  return wasRemoved;
+}
+
 } // namespace
 
 namespace jnp1 {
 hash_function_id_t hash_create(hash_function_t hash_function) {
-  std::string logArguments;
-  if (hash_function == NULL) {
-    logArguments = "NULL";
-  } else {
-    std::stringstream ss;
-    ss << &hash_function;
-    logArguments = ss.str();
-  }
-  debugArgumentsInformation("hash_create", logArguments);
+  if (invalidInputHashCreate(hash_function))
+    return 0;
 
-  numberOfCreatedHashes++;
   hash_table_t hash_table(0, Hash(hash_function));
-  hash_tables().insert({numberOfCreatedHashes - 1UL, hash_table});
+  hash_tables().insert({numberOfCreatedHashes, hash_table});
 
-  debugFinalInformation("hash_create", numberOfCreatedHashes - 1, " created");
-  return numberOfCreatedHashes - 1;
+  log("hash_create: hash table #", numberOfCreatedHashes, " created\n");
+
+  return numberOfCreatedHashes++;
 }
 
 void hash_delete(hash_function_id_t id) {
-  debugArgumentsInformation("hash_delete", std::to_string(id));
+  log("hash_delete(", id, ")\n");
+
   bool wasErased = hash_tables().erase(id);
 
-  std::string debugEnding = wasErased ? " deleted" : " does not exist";
-  debugFinalInformation("hash_delete", id, debugEnding);
+  if (wasErased) {
+    log("hash_delete: hash table #", id, " deleted\n");
+  } else {
+    log("hash_delete: hash table #", id, " does not exist\n");
+  }
 }
 
 size_t hash_size(unsigned long id) {
-  debugArgumentsInformation("hash_size", std::to_string(id));
+  log("hash_size(", id, ")\n");
+
   auto hashTablesIt = hash_tables().find(id);
   size_t answer = 0;
 
-  if (!(hashTablesIt == hash_tables().end())) {
+  if (hashTableExists(hashTablesIt)) {
     answer = (hashTablesIt->second).size();
-    std::string debugEnding =
-        " contains " + std::to_string(answer) + " element(s)";
-    debugFinalInformation("hash_size", id, debugEnding);
+    
+    log("hash_size: hash table #", id, " contains ", answer, " element(s)\n");
   } else {
-    debugFinalInformation("hash_size", id, " does not exist");
+    log("hash_size: hash table #", id, " does not exist\n");
   }
 
   return answer;
 }
 
 bool hash_insert(hash_function_id_t id, uint64_t const *seq, size_t size) {
-  std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-
-  debugArgumentsInformation("hash_insert", std::to_string(id) + ", " +
-                                               stringRepresentationOfSeq +
-                                               ", " + std::to_string(size));
+  log("hash_insert(", id, ", ");
+  logArray(seq, size);
+  log(", ", size, ")\n");
+  
   auto hashTableIt = hash_tables().find(id);
 
-  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_insert", seq,
-    size)) {
+  if (invalidInput(hashTableIt, id, seq, size, "hash_insert")) {
     return false;
   }
   
-
-  std::vector<uint64_t> copySeq(seq, seq + size);
-  bool wasInserted = (hashTableIt->second).insert(copySeq).second;
-
-  std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
-  debugEnding += wasInserted ? " inserted" : " was present";
-  debugFinalInformation("hash_insert", id, debugEnding);
-
-  return wasInserted;
+  return insert(hashTableIt, seq, size);
 }
 
 bool hash_remove(hash_function_id_t id, uint64_t const *seq, size_t size) {
-  std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-  debugArgumentsInformation("hash_remove", std::to_string(id) + ", " +
-                                               stringRepresentationOfSeq +
-                                               ", " + std::to_string(size));
+  log("hash_remove(", id, ", ");
+  logArray(seq, size);
+  log(", ", size, ")\n");
 
   auto hashTableIt = hash_tables().find(id);
 
-  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_remove", seq,
-    size)) {
+  if (invalidInput(hashTableIt, id, seq, size, "hash_remove")) {
     return false;
   }
 
-  bool wasRemoved =
-      (hashTableIt->second).erase(std::vector<uint64_t>(seq, seq + size));
-  std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
-  debugEnding += wasRemoved ? " removed" : " was not present";
-  debugFinalInformation("hash_remove", id, debugEnding);
-
-  return wasRemoved;
+  return remove(hashTableIt, seq, size);
 }
 
 void hash_clear(hash_function_id_t id) {
-  debugArgumentsInformation("hash_clear", std::to_string(id));
-  auto hashTableIt = hash_tables().find(id);
-  bool wasCleared = false;
+  log("hash_clear(", id, ")\n");
 
-  if (hashTableIt != hash_tables().end()) {
-    if (!(hashTableIt->second).empty()) {
-      (hashTableIt->second).clear();
-      wasCleared = true;
-    }
-    std::string debugEnding = wasCleared ? " cleared" : " was empty";
-    debugFinalInformation("hash_clear", id, debugEnding);
-  } else {
-    debugFinalInformation("hash_clear", id, " does not exist");
+  auto hashTableIt = hash_tables().find(id);
+  
+  if (invalidHashClearInput(hashTableIt, id)) {
+    return;
   }
+  
+  clear(hashTableIt);
 }
 
 bool hash_test(hash_function_id_t id, uint64_t const *seq, size_t size) {
-  std::string stringRepresentationOfSeq = getStringRepresentation(seq, size);
-  debugArgumentsInformation("hash_test", std::to_string(id) + ", " +
-                                             stringRepresentationOfSeq + ", " +
-                                             std::to_string(size));
-  bool isPresent = false;
+  log("hash_test(", id, ", ");
+  logArray(seq, size);
+  log(", ", size, ")\n");
+
   auto hashTableIt = hash_tables().find(id);
 
-  if (special_cases(hashTableIt == hash_tables().end(), id, "hash_test", seq,
-    size)) {
+  if (invalidInput(hashTableIt, id, seq, size, "hash_test")) {
     return false;
   }
 
-  hash_table_t hashTable = hashTableIt->second;
-  isPresent = hashTable.end() != hashTable.find(seq_vector_t(seq, seq + size));
-
-  std::string debugEnding = ", sequence " + stringRepresentationOfSeq;
-  debugEnding += isPresent ? " is present" : " is not present";
-  debugFinalInformation("hash_test", id, debugEnding);
-
-  return isPresent;
+  return test(hashTableIt, seq, size);
 }
 } // namespace jnp1
