@@ -51,10 +51,11 @@ void logArray(uint64_t const *&seq, size_t &size) {
     } else {
       std::cerr << "\"";
       for (size_t i = 0; i < size; i++)
-        if (i == size - 1)
+        if (i == size - 1) {
           std::cerr << seq[i];
-        else 
+        } else {
           std::cerr << seq[i] << ' ';
+        }
       std::cerr << "\"";
     }
   }
@@ -111,10 +112,11 @@ bool insert(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t siz
 
   log("hash_insert: hash table #", hashTableIt->first, ", sequence ");
   logArray(seq, size);
-  if (wasInserted)
+  if (wasInserted) {
     log(" inserted\n");
-  else
+  } else {
     log(" was present\n");
+  }
 
   return wasInserted;
 }
@@ -153,10 +155,11 @@ bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t siz
   
   log("hash_remove: hash table #", hashTableIt->first, ", sequence ");
   logArray(seq, size);
-  if (wasRemoved)
+  if (wasRemoved) {
     log(" removed\n");
-  else 
+  } else { 
     log(" was not present\n");
+  }
 
   return wasRemoved;
 }
@@ -165,8 +168,9 @@ bool remove(hash_tables_t::iterator hashTableIt, uint64_t const *seq, size_t siz
 
 namespace jnp1 {
 hash_table_id_t hash_create(hash_function_t hash_function) {
-  if (invalidInputHashCreate(hash_function))
+  if (invalidInputHashCreate(hash_function)) {
     return 0;
+  }
 
   hash_table_t hash_table(0, Hash(hash_function));
   hash_tables().insert({numberOfCreatedHashes, hash_table});
